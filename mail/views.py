@@ -11,8 +11,6 @@ from .models import User, Email
 
 
 def index(request):
-    if request.method == "POST":
-        print("index", request.POST)
 
     # Authenticated users view their inbox
     if request.user.is_authenticated:
@@ -26,8 +24,6 @@ def index(request):
 @csrf_exempt
 @login_required
 def compose(request):
-    if request.method == "POST":
-        print("compose", request.POST)
 
     # Composing a new email must be via POST
     if request.method != "POST":
@@ -78,8 +74,6 @@ def compose(request):
 
 @login_required
 def mailbox(request, mailbox):
-    if request.method == "POST":
-        print("mailbox", request.POST)
 
     # Filter emails returned based on mailbox
     if mailbox == "inbox":
@@ -97,6 +91,8 @@ def mailbox(request, mailbox):
     else:
         return JsonResponse({"error": "Invalid mailbox."}, status=400)
 
+    print(emails)
+
     # Return emails in reverse chronologial order
     emails = emails.order_by("-timestamp").all()
     return JsonResponse([email.serialize() for email in emails], safe=False)
@@ -105,8 +101,6 @@ def mailbox(request, mailbox):
 @csrf_exempt
 @login_required
 def email(request, email_id):
-    if request.method == "POST":
-        print("emial", request.POST)
 
     # Query for requested email
     try:

@@ -55,4 +55,62 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+  //let email = document.querySelector('h2').innerHTML;
+
+  // GET email to API
+  fetch(`/emails/${mailbox}`)
+    .then(response => response.json())
+    .then(result => {
+      // Print result
+      console.log(result);
+
+      for (let i = 0; i < result.length; i++) {
+        let emailRow = document.createElement('div')
+        emailRow.setAttribute('id', `emailRow-${i}`)
+        emailRow.setAttribute('class', 'emailRow')
+        let emailRecipients = document.createElement('b')
+        emailRecipients.setAttribute('class', 'emailRecipients')
+
+        // Set sender
+        if (mailbox === "inbox") {
+          emailRecipients.innerHTML = result[i]["sender"]
+        } else {
+          emailRecipients.innerHTML = result[i]["recipients"]
+        }
+
+        // Set borders
+        if (result[i]["read"] === false) {
+          emailRow.style.backgroundColor = "#666"
+        } else {
+          emailRow.style.backgroundColor = "#fff"
+
+        }
+
+        let emailSubject = document.createElement('span')
+        emailSubject.setAttribute('class', 'emailSubject')
+        emailSubject.innerHTML = result[i]["subject"]
+        let emailTimestamp = document.createElement('span')
+        emailTimestamp.setAttribute('class', 'emailTimestamp')
+        emailTimestamp.innerHTML = result[i]["timestamp"]
+
+        document.querySelector('#emails-view').appendChild(emailRow)
+        document.querySelector(`#emailRow-${i}`).appendChild(emailRecipients)
+        document.querySelector(`#emailRow-${i}`).appendChild(emailSubject)
+        document.querySelector(`#emailRow-${i}`).appendChild(emailTimestamp)
+
+        /*
+        let arr = ["div", "b", "span"]
+        let el = arr.reduceRight((el, n) => {
+          let d = document.createElement(n)
+          d.appendChild(el)
+          return d
+        }, document.createTextNode(result[i]["subject"]))
+
+        document.getElementById('emails-view').appendChild(el)
+        */
+      }
+    });
+
+  return false;
 }

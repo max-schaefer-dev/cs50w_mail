@@ -1,3 +1,15 @@
 textarea {
     min-height: 400px;
 }
+.emailRow{
+    border: 1px solid black;
+    padding: 5px;
+    line-height: normal;
+}
+.emailRecipients{
+    margin: 0 10px 0 0;
+}
+.emailTimestamp{
+    float:right;
+    color:#666;
+}
