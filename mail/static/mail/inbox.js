@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
@@ -8,6 +8,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // By default, load the inbox
   load_mailbox('inbox');
+
+  // Event listener for sending an email
+  document.querySelector('#compose-form').onsubmit = () => {
+    let recipients = document.querySelector('#compose-recipients').value;
+    let subject = document.querySelector('#compose-subject').value;
+    let body = document.querySelector('#compose-body').value;
+
+    // POST email to API
+    fetch('/emails', {
+      method: 'POST',
+      body: JSON.stringify({
+        recipients: recipients,
+        subject: subject,
+        body: body
+      })
+    })
+      .then(response => response.json())
+      .then(result => {
+        // Print result
+        console.log(result);
+      });
+
+    load_mailbox('sent')
+    return false;
+  }
 });
 
 function compose_email() {
@@ -23,7 +48,7 @@ function compose_email() {
 }
 
 function load_mailbox(mailbox) {
-  
+
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
