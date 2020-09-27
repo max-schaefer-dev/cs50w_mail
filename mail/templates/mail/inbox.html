@@ -11,7 +11,32 @@
 <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
 <hr>
 
-<div id="emails-view">
+<div id="email-view">
+    <div class="emailHeader">
+        <div class="emailHeaderRow">
+            <b class="rowLabel">From: </b>
+            <span class="rowContent" id="emailSender"></span>
+        </div>
+        <div class="emailHeaderRow">
+            <b class="rowLabel">To: </b>
+            <span class="rowContent" id="emailRecipients"></span>
+        </div>
+        <div class="emailHeaderRow">
+            <b class="rowLabel">Subject: </b>
+            <span class="rowContent" id="emailSubject"></span>
+        </div>
+        <div class="emailHeaderRow">
+            <b class="rowLabel" id="">Timestamp: </b>
+            <span class="rowContent" id="emailTimestamp"></span>
+        </div>
+        <button id="replyButton" class="btn btn-sm btn-outline-primary">Reply</button>
+    </div>
+    <hr>
+    <div id="emailBody">
+    </div>
+</div>
+
+<div id="inbox-view">
 </div>
 
 <div id="compose-view">
