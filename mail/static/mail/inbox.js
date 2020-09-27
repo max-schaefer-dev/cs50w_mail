@@ -4,8 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-  document.querySelector('#compose').addEventListener('click', compose_email);
-  document.querySelector('#replyButton').onclick = () => compose_email();
+  document.querySelector('#compose').addEventListener('click', () => compose_email('none'));
 
   // By default, load the inbox
   load_mailbox('inbox');
@@ -38,8 +37,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-function compose_email() {
-
+function compose_email(replyEmail) {
+  console.log(replyEmail)
   // Show compose view and hide other views
   document.querySelector('#inbox-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
@@ -49,6 +48,17 @@ function compose_email() {
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
+
+  if (replyEmail != 'none') {
+    // Pre-fill composition fields if user is replying
+    document.querySelector('#compose-recipients').value = `${replyEmail["sender"]}`;
+    if (replyEmail["subject"].startsWith('Re: ')) {
+      document.querySelector('#compose-subject').value = `${replyEmail["subject"]}`;
+    } else {
+      document.querySelector('#compose-subject').value = `Re: ${replyEmail["subject"]}`;
+    }
+    document.querySelector('#compose-body').value = `\n\n"On ${replyEmail["timestamp"]} ${replyEmail["sender"]} wrote:" \n${replyEmail["body"]}`;
+  }
 }
 
 function load_mailbox(mailbox) {
@@ -165,6 +175,9 @@ function load_email(mailbox) {
             });
             setTimeout(() => { load_mailbox('inbox') }, 200);
           };
+
+          document.querySelector('#replyButton').onclick = () => compose_email(result);
+
 
           // Print result
           console.log(result);
