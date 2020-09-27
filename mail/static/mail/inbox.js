@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
+  document.querySelector('#replyButton').onclick = () => compose_email();
 
   // By default, load the inbox
   load_mailbox('inbox');
@@ -59,8 +60,6 @@ function load_mailbox(mailbox) {
   // Show the mailbox name
   document.querySelector('#inbox-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
-  //let email = document.querySelector('h2').innerHTML;
-
   // GET email to API
   fetch(`/emails/${mailbox}`)
     .then(response => response.json())
@@ -102,15 +101,15 @@ function load_mailbox(mailbox) {
         document.querySelector(`#emailRow-${i}`).appendChild(emailSubject)
         document.querySelector(`#emailRow-${i}`).appendChild(emailTimestamp)
 
-        load_email()
-
       }
+      load_email(mailbox)
+
     });
 
   return false;
 }
 
-function load_email() {
+function load_email(mailbox) {
   document.querySelectorAll('button.emailRow').forEach(button =>
     button.onclick = () => {
       fetch(`/emails/${button.dataset.id}`)
@@ -121,11 +120,18 @@ function load_email() {
           document.querySelector('#compose-view').style.display = 'none';
           document.querySelector('#email-view').style.display = 'block';
 
+          if (mailbox === 'sent') {
+            document.querySelector('#archiveButton').style.display = 'none';
+          } else {
+            document.querySelector('#archiveButton').style.display = 'inline-block';
+          }
+
           // Clear out composition fields
           document.querySelector('#emailSender').value = '';
           document.querySelector('#emailRecipients').value = '';
           document.querySelector('#emailSubject').value = '';
           document.querySelector('#emailTimestamp').value = '';
+          document.querySelector('#archiveButton').value = '';
 
           // Populate composition fields
           document.querySelector('#emailSender').innerHTML = (`${result["sender"]}`)
@@ -133,6 +139,11 @@ function load_email() {
           document.querySelector('#emailSubject').innerHTML = (`${result["subject"]}`)
           document.querySelector('#emailTimestamp').innerHTML = (`${result["timestamp"]}`)
           document.querySelector('#emailBody').innerHTML = (`${result["body"]}`)
+          if (result["archived"] === true) {
+            document.querySelector('#archiveButton').innerHTML = ('Unarchive')
+          } else {
+            document.querySelector('#archiveButton').innerHTML = ('Archive')
+          }
 
           fetch(`/emails/${button.dataset.id}`, {
             method: 'PUT',
@@ -141,7 +152,19 @@ function load_email() {
             })
           });
 
-          document.querySelector('#replyButton').onclick = () => compose_email();
+          document.querySelector('#archiveButton').onclick = () => {
+            let archiveStatus = true
+            if (result["archived"] === true) {
+              archiveStatus = false
+            }
+            fetch(`/emails/${button.dataset.id}`, {
+              method: 'PUT',
+              body: JSON.stringify({
+                archived: archiveStatus
+              })
+            });
+            setTimeout(() => { load_mailbox('inbox') }, 200);
+          };
 
           // Print result
           console.log(result);
